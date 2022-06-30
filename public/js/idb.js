@@ -1,7 +1,6 @@
-//DB connection
+//hold DB
 let db;
 const request = indexedDB.open('budget_tracker', 1);
-
 request.onupgradeneeded = function (event) {
   const db = event.target.result;
   db.createObjectStore('budget_tracker', { autoIncrement: true });
@@ -9,13 +8,13 @@ request.onupgradeneeded = function (event) {
 
 request.onsuccess = function (event) {
   db = event.target.result;
+  // check if online
   if (navigator.onLine) {
     uploadTransaction();
   }
 };
 
 request.onerror = function (event) {
-  //ERROR
   console.log(event.target.errorCode);
 };
 
@@ -24,7 +23,6 @@ function saveRecord(formData) {
   const transactionObjectStore = transaction.objectStore('budget_tracker');
   transactionObjectStore.add(formData);
 }
-
 function uploadTransaction() {
   const transaction = db.transaction(['budget_tracker'], 'readwrite');
   const transactionObjectStore = transaction.objectStore('budget_tracker');
@@ -47,6 +45,8 @@ function uploadTransaction() {
           const transaction = db.transaction(['budget_tracker'], 'readwrite');
           const transactionObjectStore =
             transaction.objectStore('budget_tracker');
+
+          // clear items
           transactionObjectStore.clear();
 
           alert('All saved transaction has been submitted!');
